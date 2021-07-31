@@ -30,7 +30,7 @@ func renderNode(n *html.Node) string {
 }
 
 // isChildTextNode helps in cases of text elements like
-// <p>,<a>,<span>check to check if a given node
+// <p>,<a>,<span> to check if a given node
 // child is a singular text node.
 func isChildTextNode(n *html.Node) bool {
 
