@@ -1,5 +1,5 @@
 <h2 align="center">Simple HTML Modification in Go</h2>
-Do you grin at the sight of ```html.Node```? Me too.
+Do you grin at the sight of html.Node ? Me too.
 
 Modifying HTML in Go should be simple.
 
