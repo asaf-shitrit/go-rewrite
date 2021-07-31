@@ -1,10 +1,8 @@
 package html_overwrite
 
 import (
-	"bytes"
 	"fmt"
 	"golang.org/x/net/html"
-	"io"
 	"strings"
 )
 
@@ -113,34 +111,6 @@ func filter(root *html.Node, run func(n *html.Node) bool) []*html.Node {
 	return found
 }
 
-// parsePartial parses a given value as a partial HTML
-// format string.
-func parsePartial(value string) (*html.Node, error) {
-	node, err := html.Parse(strings.NewReader(value))
-	if err != nil {
-		return nil, err
-	}
-
-	child := node.LastChild.LastChild.LastChild
-	child.Parent = nil
-	child.PrevSibling = nil
-	child.NextSibling = nil
-
-	return child, nil
-}
-
-// removes all of a given node children.
-func removeNodeChildren(node *html.Node) {
-	children := make([]*html.Node, 0)
-	for child := node.FirstChild; child != nil; child = child.NextSibling {
-		children = append(children, child)
-	}
-
-	for _, child := range children {
-		node.RemoveChild(child)
-	}
-}
-
 // Set will query for nodes matching the
 // given path and set their content to be the
 // given value.
@@ -155,10 +125,23 @@ func (w *writer) Set(path, value string) (err error) {
 
 	for _, node := range nodes {
 		removeNodeChildren(node)
-		node.AppendChild(newNode)
+		appendChild(node, newNode)
 	}
 
 	return
+}
+
+// appendChild is a replacement call for the html.Node
+// AppendChild func due to it being pretty annoying in
+// case of same instances of a child appended to different
+// nodes (which causes parent collision) so this is an actual
+// useful implementation of it that clones the child beforehand.
+func appendChild(node *html.Node, child *html.Node) {
+	// we have to copy html nodes to
+	// prevent a collision of parent pointer
+	// in the internal node logic
+	clonedChild := cloneNode(child)
+	node.AppendChild(clonedChild)
 }
 
 // Append will query for nodes matching the
@@ -174,21 +157,10 @@ func (w *writer) Append(path, value string) (err error) {
 	}
 
 	for _, node := range nodes {
-
-		// create new node
-		node.AppendChild(newNode)
+		appendChild(node, newNode)
 	}
 
 	return
-}
-
-// renderNode will convert the given HTML node
-// to a string format.
-func renderNode(n *html.Node) string {
-	var buf bytes.Buffer
-	w := io.Writer(&buf)
-	_ = html.Render(w, n)
-	return buf.String()
 }
 
 // String will return the active HTML node
