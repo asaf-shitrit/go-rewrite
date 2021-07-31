@@ -37,5 +37,4 @@ func main(){
 ## State
 - Will be actively developed by me based on features I require in personal projects
 - Tests will be added to each new feature release 
-- CI will be integrated in future release
 - Feel free to create new issues if you find any 😃
