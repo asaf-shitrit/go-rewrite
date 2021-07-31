@@ -69,7 +69,6 @@ func (w *writer) query(path string) (res []*html.Node) {
 	return
 }
 
-
 // find the first node in the root tree matching the
 // id criteria.
 func id(root *html.Node, id string) (*html.Node, error) {
@@ -97,7 +96,8 @@ func id(root *html.Node, id string) (*html.Node, error) {
 	return found, nil
 }
 
-// filters a given
+// filters a given root node & all of its children using a
+// given function that returns a bool result.
 func filter(root *html.Node, run func(n *html.Node) bool) []*html.Node {
 	found := make([]*html.Node, 0)
 	var crawler func(*html.Node)
@@ -121,7 +121,6 @@ func parsePartial(value string) (*html.Node, error) {
 		return nil, err
 	}
 
-
 	child := node.LastChild.LastChild.LastChild
 	child.Parent = nil
 	child.PrevSibling = nil
@@ -131,7 +130,7 @@ func parsePartial(value string) (*html.Node, error) {
 }
 
 // removes all of a given node children.
-func removeNodeChildren(node *html.Node){
+func removeNodeChildren(node *html.Node) {
 	children := make([]*html.Node, 0)
 	for child := node.FirstChild; child != nil; child = child.NextSibling {
 		children = append(children, child)
