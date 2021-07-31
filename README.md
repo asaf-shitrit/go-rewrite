@@ -1,3 +1,4 @@
+[![Project Tests](https://github.com/asaf-shitrit/html-overwrite/actions/workflows/go.yml/badge.svg)](https://github.com/asaf-shitrit/html-overwrite/actions/workflows/go.yml)
 <h2 align="center">Simple HTML Modification in Go</h2>
 Do you grin at the sight of html.Node ? Me too.
 
