@@ -1,4 +1,5 @@
 [![Project Tests](https://github.com/asaf-shitrit/html-overwrite/actions/workflows/go.yml/badge.svg)](https://github.com/asaf-shitrit/html-overwrite/actions/workflows/go.yml)
+[![codecov](https://codecov.io/gh/asaf-shitrit/html-overwrite/branch/main/graph/badge.svg?token=4BAB8KMGCJ)](https://codecov.io/gh/asaf-shitrit/html-overwrite)
 <h2 align="center">Simple HTML Modification in Go</h2>
 Do you grin at the sight of html.Node ? Me too.
 
