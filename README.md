@@ -14,7 +14,7 @@ Modifying HTML in Go should be simple.
 
 ```go
 package main
-import "github.com/asaf-shitrit/html-overwrite"
+import "github.com/asaf-shitrit/go-rewrite"
 
 func main(){
 
