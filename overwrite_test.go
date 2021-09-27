@@ -21,7 +21,7 @@ const BaseHTMLTemplate = `
 
 const TestNode = `<p>Very Cool</p>`
 
-func idBasedTests(t *testing.T) {
+func stdLibIdBasedTests(t *testing.T) {
 	t.Run("Set", func(t *testing.T) {
 
 		createdPNode := `<p id="time">Maybe this time.</p>`
@@ -79,7 +79,7 @@ const DivsWithClassesAndContent = `
 </div>
 `
 
-func classBasedTests(t *testing.T) {
+func stdLibClassBasedTests(t *testing.T) {
 	t.Run("Set", func(t *testing.T) {
 		initialHTML := fmt.Sprintf(BaseHTMLTemplate, DivsWithClasses)
 		w, err := Load(initialHTML)
@@ -115,6 +115,13 @@ func classBasedTests(t *testing.T) {
 }
 
 func TestLoad(t *testing.T) {
-	t.Run("id based tests", idBasedTests)
-	t.Run("class based tests", classBasedTests)
+	t.Run("std lib based", func(t *testing.T) {
+		t.Run("id based tests", stdLibIdBasedTests)
+		t.Run("class based tests", stdLibClassBasedTests)
+	})
+	t.Run("stream based", func(t *testing.T) {
+		t.Run("id based tests", func(t *testing.T) {
+
+		})
+	})
 }
