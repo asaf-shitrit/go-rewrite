@@ -71,7 +71,6 @@ class=great-name
 
 // Example (Multiple Matchers)
 id=content,class=great-name
-```
 
 ## Stream Set & Append Benchmarks
 
