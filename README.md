@@ -10,7 +10,7 @@ Modifying HTML in Go should be simple.
 
 **🎓 Simplicity**: no robust solution here just one single goal
 
-## 🏎 Fast **: has support for zero allocation Set/Append
+**🏎 Fast**: has support for zero allocation Set/Append
 
 ## Getting Started
 
