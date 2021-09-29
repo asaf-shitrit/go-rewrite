@@ -23,6 +23,9 @@ const testSetHtmlTemplate = `
 </html>
 `
 
+//go:embed static_html/skipped-tags.html
+var skippedTagsHTML string
+
 func TestSet(t *testing.T) {
 
 	replacedHTML := "Test Content AAA"
@@ -39,6 +42,16 @@ func TestSet(t *testing.T) {
 	outputHtml := buffer.String()
 	assert.NotContains(t, outputHtml, replacedHTML)
 	assert.Equal(t, expectedHTML, outputHtml)
+
+	t.Run("skipped tags check", func(t *testing.T) {
+		buffer := &bytes.Buffer{}
+		setValue := "<p>Ok</p>"
+		err := Set(strings.NewReader(skippedTagsHTML), buffer, "id=content", setValue)
+		assert.Nil(t, err)
+		output := buffer.String()
+		validHTML(t, output)
+		assert.Contains(t, output, setValue)
+	})
 }
 
 const testAppendHtmlTemplate = `
@@ -155,6 +168,7 @@ func TestAppend(t *testing.T) {
 			}
 		})
 	})
+
 }
 
 func TestQueryPath_Match(t *testing.T) {

@@ -225,14 +225,13 @@ func (q queryPath) Match(value []byte) bool {
 
 // untilNextOpen skips until the next open tag
 // and returns if its ok to continue
-func untilNextOpen(pc *parseContext) bool {
+func untilNextOpen(pc *parseContext) {
 	for ; !pc.end; pc.next() {
 		if pc.now() != '<' {
 			continue
 		}
-		return true
+		return
 	}
-	return false
 }
 
 func untilHtmlTagOpen(pc *parseContext) {
@@ -248,14 +247,13 @@ func seekToEnd(pc *parseContext) {
 	}
 }
 
-func untilNextEnd(pc *parseContext) bool {
+func untilNextEnd(pc *parseContext) {
 	for ; !pc.end; pc.next() {
 		if pc.now() != '>' {
 			continue
 		}
-		return true
+		return
 	}
-	return false
 }
 
 var skippableTags = [][]byte{[]byte("script"), []byte("style"), []byte("noscript")}
@@ -278,9 +276,7 @@ func seekMatchingTagEnd(pc *parseContext, path queryPath) {
 	// skip over closing tag to next element
 	if pc.following() == '/' {
 		pc.next()
-		if !untilNextOpen(pc) {
-			return
-		}
+		untilNextOpen(pc)
 		seekMatchingTagEnd(pc, path)
 		return
 	}
@@ -325,13 +321,15 @@ func seekMatchingTagEnd(pc *parseContext, path queryPath) {
 		return
 	}
 
+	//TODO: investigate why this is not used
+
 	// check if tag content should be skipped
-	if shouldTagContentBeSkipped(pc) {
-		untilNextEnd(pc)
-		untilNextOpen(pc)
-		seekMatchingTagEnd(pc, path)
-		return
-	}
+	//if shouldTagContentBeSkipped(pc) {
+	//	untilNextEnd(pc)
+	//	untilNextOpen(pc)
+	//	seekMatchingTagEnd(pc, path)
+	//	return
+	//}
 
 	// iterate over tag attributes
 	for ; !pc.end; pc.next() {
