@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/html-overwrite/model"
 	"golang.org/x/net/html"
+	"io"
 	"strings"
 )
 
@@ -153,9 +154,8 @@ func (w *writer) String() string {
 	return renderNode(w.root)
 }
 
-func NewWriter(rawHTML string) (model.Writer, error) {
-	var doc *html.Node
-	doc, err := html.Parse(strings.NewReader(rawHTML))
+func NewWriter(r io.Reader) (model.Writer, error) {
+	doc, err := html.Parse(r)
 	if err != nil {
 		return nil, err
 	}

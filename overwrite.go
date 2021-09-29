@@ -9,8 +9,8 @@ import (
 
 // Load allows inputting html docs in string format
 // into the stdLibWriter so they could be modified.
-func Load(rawHTML string) (w model.Writer, err error) {
-	if w, err = std.NewWriter(rawHTML); err != nil {
+func Load(r io.Reader) (w model.Writer, err error) {
+	if w, err = std.NewWriter(r); err != nil {
 		return
 	}
 
