@@ -3,8 +3,8 @@ package stream
 import (
 	"bytes"
 	"errors"
+	"fmt"
 	"io"
-	"log"
 )
 
 type parseContext struct {
@@ -82,7 +82,7 @@ func (pc *parseContext) next() {
 	if !pc.skipWrite {
 		// we need to write
 		if _, err := pc.w.Write(pc.writeOutput()); err != nil {
-			log.Fatalf("failed to write output: %v", err)
+			panic(fmt.Errorf("failed to write output: %v", err))
 		}
 	}
 
@@ -202,14 +202,6 @@ func untilCurrentTagCloseTagStart(pc *parseContext) {
 func (q queryPath) Type() string {
 	key, _ := splitStringOnEqual(string(q))
 	return key
-}
-
-func stripValueParentheses(b []byte) []byte {
-	if len(b) < 3 {
-		return b
-	}
-
-	return b[1 : len(b)-1]
 }
 
 func (q queryPath) Match(value []byte) bool {

@@ -12,11 +12,7 @@ type parseContextPool struct {
 }
 
 func (pcp *parseContextPool) Get(r io.Reader, w io.Writer) *parseContext {
-	pc, ok := pcp.pool.Get().(*parseContext)
-	if !ok {
-		return newParseCtx(r, w)
-	}
-
+	pc := pcp.pool.Get().(*parseContext)
 	pc.reset(r, w)
 	return pc
 }

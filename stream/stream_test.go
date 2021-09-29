@@ -156,3 +156,24 @@ func TestAppend(t *testing.T) {
 		})
 	})
 }
+
+func TestQueryPath_Match(t *testing.T) {
+	path := queryPath("id=3")
+
+	t.Run("empty value", func(t *testing.T) {
+		assert.False(t, path.Match([]byte("")))
+	})
+
+	t.Run("no match", func(t *testing.T) {
+		assert.False(t, path.Match([]byte("href=\"google.com\"")))
+	})
+
+	t.Run("match", func(t *testing.T) {
+		assert.True(t, path.Match([]byte("id=3")))
+	})
+
+	t.Run("invalid path key", func(t *testing.T) {
+		invalidPath := queryPath("bad=5")
+		assert.False(t, invalidPath.Match([]byte("id=3")))
+	})
+}

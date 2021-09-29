@@ -17,7 +17,7 @@ func unsafeGetBytes(s string) []byte {
 func splitStringOnEqual(s string) (string, string) {
 	i := strings.Index(s, "=")
 	if i < 0 {
-		panic("failed to split key value")
+		panic(errors.New("failed to split key value"))
 	}
 	return s[:i], s[i+1:]
 }
@@ -28,4 +28,12 @@ func splitBytesOnEqual(s []byte) ([]byte, []byte) {
 		panic(errors.New("failed to split key value"))
 	}
 	return s[:i], s[i+1:]
+}
+
+func stripValueParentheses(b []byte) []byte {
+	if len(b) < 3 {
+		return b
+	}
+
+	return b[1 : len(b)-1]
 }
