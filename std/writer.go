@@ -1,8 +1,10 @@
-package html_overwrite
+package std
 
 import (
 	"fmt"
+	"github.com/html-overwrite/model"
 	"golang.org/x/net/html"
+	"io"
 	"strings"
 )
 
@@ -11,23 +13,6 @@ import (
 // interface.
 type writer struct {
 	root *html.Node
-}
-
-// Writer allows mutating HTML nodes
-// at ease using a simple query language
-// and raw html string values.
-type Writer interface {
-	// Set will query for nodes matching the
-	// given path and set their content to be the
-	// given value.
-	Set(path string, value string) error
-	// Append will query for nodes matching the
-	// given path and append a new child node
-	// as the given value.
-	Append(path string, value string) error
-	// String will return the active HTML node
-	// loaded into the writer in a string format.
-	String() string
 }
 
 // a query will return a list of found nodes
@@ -169,16 +154,11 @@ func (w *writer) String() string {
 	return renderNode(w.root)
 }
 
-// Load allows inputting html docs in string format
-// into the writer so they could be modified.
-func Load(rawHTML string) (w Writer, err error) {
-
-	var doc *html.Node
-	doc, err = html.Parse(strings.NewReader(rawHTML))
+func NewWriter(r io.Reader) (model.Writer, error) {
+	doc, err := html.Parse(r)
 	if err != nil {
-		return
+		return nil, err
 	}
 
-	w = &writer{doc}
-	return
+	return &writer{doc}, nil
 }

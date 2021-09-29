@@ -35,7 +35,22 @@ func main(){
 }
 ```
 
+## Stream Cases
+```
+import "github.com/asaf-shitrit/go-rewrite"
+
+func main(){
+    
+    // example stream
+    res, err := http.DefaultClient.Get("somesite.com")
+    output := &bytes.Buffer{}
+
+    // append
+    html_overwrite.Append(res.Body, output, "tag=head", injectedValue)
+}
+```
 ## Query Language
+```
 
 The two html identifiers supported right now are:
 - id
@@ -56,7 +71,33 @@ class=great-name
 
 // Example (Multiple Matchers)
 id=content,class=great-name
+
+## Stream Set & Append Benchmarks
+
+Useful for stream cases where a single 
+performant mutation is required.
+
+std go lib:
 ```
+BenchmarkAppend
+BenchmarkAppend/std_lib
+BenchmarkAppend/std_lib         	  153255	      7917 ns/op	   12232 B/op	      69 allocs/op
+BenchmarkSet
+BenchmarkSet/std_lib
+BenchmarkSet/std_lib            	  153068	      7913 ns/op	   12512 B/op	      82 allocs/op
+```
+
+stream implementation:
+ ```
+BenchmarkAppend
+BenchmarkAppend/stream
+BenchmarkAppend/stream          	  398082	      3024 ns/op	       0 B/op	       0 allocs/op
+BenchmarkSet
+BenchmarkSet/stream
+BenchmarkSet/stream             	  409041	      2886 ns/op	       0 B/op	       0 allocs/op
+PASS
+```
+
 
 ## State
 - Will be actively developed by me based on features I require in personal projects
