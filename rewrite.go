@@ -1,4 +1,4 @@
-package html_overwrite
+package rewrite
 
 import (
 	"github.com/html-overwrite/model"
