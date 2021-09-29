@@ -1,11 +1,28 @@
 package html_overwrite
 
 import (
+	"bytes"
+	"errors"
 	"fmt"
 	"github.com/stretchr/testify/assert"
+	"golang.org/x/net/html"
+	"io/ioutil"
 	"regexp"
+	"strings"
 	"testing"
 )
+
+func validHTML(t *testing.T, s string) {
+	nodes, err := html.ParseFragment(strings.NewReader(s), nil)
+	if err != nil {
+		t.Fatalf("non valid html: %v", err)
+	}
+	for _, n := range nodes {
+		if err := html.Render(ioutil.Discard, n); err != nil {
+			t.Fatalf("non valid html: %v", err)
+		}
+	}
+}
 
 const BaseHTMLTemplate = `
 <html>
@@ -27,7 +44,7 @@ func stdLibIdBasedTests(t *testing.T) {
 		createdPNode := `<p id="time">Maybe this time.</p>`
 		initialHTML := fmt.Sprintf(BaseHTMLTemplate, TestNode)
 
-		w, err := Load(initialHTML)
+		w, err := Load(strings.NewReader(initialHTML))
 		assert.Nil(t, err)
 		assert.NotNil(t, w)
 
@@ -41,7 +58,7 @@ func stdLibIdBasedTests(t *testing.T) {
 
 	t.Run("Append", func(t *testing.T) {
 		initialHTML := fmt.Sprintf(BaseHTMLTemplate, "")
-		w, err := Load(initialHTML)
+		w, err := Load(strings.NewReader(initialHTML))
 		assert.Nil(t, err)
 		assert.NotNil(t, w)
 
@@ -82,7 +99,7 @@ const DivsWithClassesAndContent = `
 func stdLibClassBasedTests(t *testing.T) {
 	t.Run("Set", func(t *testing.T) {
 		initialHTML := fmt.Sprintf(BaseHTMLTemplate, DivsWithClasses)
-		w, err := Load(initialHTML)
+		w, err := Load(strings.NewReader(initialHTML))
 		assert.Nil(t, err)
 		assert.NotNil(t, w)
 		injectedPNode := `<p>Great Content Also!</p>`
@@ -97,7 +114,7 @@ func stdLibClassBasedTests(t *testing.T) {
 
 	t.Run("Append", func(t *testing.T) {
 		initialHTML := fmt.Sprintf(BaseHTMLTemplate, DivsWithClassesAndContent)
-		w, err := Load(initialHTML)
+		w, err := Load(strings.NewReader(initialHTML))
 		assert.Nil(t, err)
 		assert.NotNil(t, w)
 		injectedPNode := `<p>Come visit Kenyon Lev Hadera</p>`
@@ -114,14 +131,66 @@ func stdLibClassBasedTests(t *testing.T) {
 	})
 }
 
-func TestLoad(t *testing.T) {
+func streamIdBasedTests(t *testing.T) {
+
+	t.Run("Set", func(t *testing.T) {
+		initialHTML := fmt.Sprintf(BaseHTMLTemplate, `<p id="time">Maybe this time.</p>`)
+		outputHTML := &bytes.Buffer{}
+		err := Set(strings.NewReader(initialHTML), outputHTML, "id=time", "This time for sure.")
+		assert.Nil(t, err)
+
+		output := outputHTML.String()
+		validHTML(t, output)
+		assert.Contains(t, output, "This time for sure")
+	})
+
+	t.Run("Append", func(t *testing.T) {
+		initialHTML := fmt.Sprintf(BaseHTMLTemplate, `<p>Maybe this time.</p>`)
+		outputHTML := &bytes.Buffer{}
+		appendedValue := "<p>Another one</p>"
+		err := Set(strings.NewReader(initialHTML), outputHTML, "id=content", appendedValue)
+		assert.Nil(t, err)
+
+		output := outputHTML.String()
+		validHTML(t, output)
+		assert.Contains(t, output, appendedValue)
+	})
+}
+
+func streamTagBasedTests(t *testing.T) {
+	t.Run("Append", func(t *testing.T) {
+		initialHTML := fmt.Sprintf(BaseHTMLTemplate, "")
+		outputHTML := &bytes.Buffer{}
+		injectedValue := "<script>alert(1)</script>"
+		err := Append(strings.NewReader(initialHTML), outputHTML, "tag=head", injectedValue)
+		assert.Nil(t, err)
+
+		output := outputHTML.String()
+		validHTML(t, output)
+		assert.Contains(t, output, injectedValue)
+	})
+}
+
+type ErrReader struct{ Error error }
+
+func (e *ErrReader) Read([]byte) (int, error) {
+	return 0, e.Error
+}
+
+func TestHtmlMutations(t *testing.T) {
 	t.Run("std lib based", func(t *testing.T) {
+		t.Run("bad inputs", func(t *testing.T) {
+			t.Run("err reader", func(t *testing.T) {
+				r := &ErrReader{Error: errors.New("random failure")}
+				_, err := Load(r)
+				assert.NotNil(t, err)
+			})
+		})
 		t.Run("id based tests", stdLibIdBasedTests)
 		t.Run("class based tests", stdLibClassBasedTests)
 	})
 	t.Run("stream based", func(t *testing.T) {
-		t.Run("id based tests", func(t *testing.T) {
-
-		})
+		t.Run("id based tests", streamIdBasedTests)
+		t.Run("tag based tests", streamTagBasedTests)
 	})
 }

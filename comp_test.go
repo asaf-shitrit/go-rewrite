@@ -26,7 +26,7 @@ func BenchmarkAppend(b *testing.B) {
 
 	b.Run("std lib", func(b *testing.B) {
 		for n := 0; n < b.N; n++ {
-			writer, _ := Load(testHTML)
+			writer, _ := Load(strings.NewReader(testHTML))
 			_ = writer.Append("id=body", appendedValue)
 		}
 		b.ReportAllocs()
@@ -52,7 +52,7 @@ func BenchmarkAppend(b *testing.B) {
 func BenchmarkSet(b *testing.B) {
 	b.Run("std lib", func(b *testing.B) {
 		for n := 0; n < b.N; n++ {
-			writer, _ := Load(testHTML)
+			writer, _ := Load(strings.NewReader(testHTML))
 			_ = writer.Set("id=meow", testValue)
 		}
 		b.ReportAllocs()
