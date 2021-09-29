@@ -10,6 +10,8 @@ Modifying HTML in Go should be simple.
 
 **🎓 Simplicity**: no robust solution here just one single goal
 
+## 🏎 Fast **: has support for zero allocation Set/Append
+
 ## Getting Started
 
 ```go
@@ -18,14 +20,16 @@ import "github.com/asaf-shitrit/go-rewrite"
 
 func main(){
 
-    // load
-    doc := html_overwrite.Load(`
+    example := `
        <html>
             <body>
                 <h1 id="content">Hello !</h1>
             </body>
        </html>
-    `)
+    `
+
+    // load
+    doc := html_overwrite.Load(strings.NewReader(example))
 
     // mutate
     doc.Set("id=content", "Bye Bye")
@@ -35,8 +39,9 @@ func main(){
 }
 ```
 
-## Stream Cases
-```
+## Fast Set/Append
+
+```go
 import "github.com/asaf-shitrit/go-rewrite"
 
 func main(){
@@ -87,7 +92,7 @@ BenchmarkSet/std_lib
 BenchmarkSet/std_lib            	  153068	      7913 ns/op	   12512 B/op	      82 allocs/op
 ```
 
-stream implementation:
+stream implementation (zero allocations):
  ```
 BenchmarkAppend
 BenchmarkAppend/stream
